@@ -4,18 +4,24 @@ import android.app.Activity;
 import android.content.ContentResolver;
 import android.content.Intent;
 import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.support.annotation.Nullable;
+import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 import android.widget.TextView;
 
+import java.io.File;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,19 +30,16 @@ public class SingleSelectImgActivity extends AppCompatActivity {
     private List<String> list = new ArrayList<>();
     private List<String> folderNameList = new ArrayList<>();
     private List<List<String>> folderList = new ArrayList<>();
-    private RecyclerView recyclerView;
     private int count = 0;
     private ImageViewAdapter imageViewAdapter;
 
-    private FolderAdapter folderAdapter;
-
-    private RecyclerView folderRecyclerView;
-
     private PopupWindow popupWindow;
+
+    private TextView title;
 
     //配置项
     private int column_num = 3;
-    private TextView title;
+    private boolean isCrop = false;
 
     public static void startImageSelect(Activity context, int columnNum, int requestCode){
         Intent i = new Intent(context, SingleSelectImgActivity.class);
@@ -44,6 +47,13 @@ public class SingleSelectImgActivity extends AppCompatActivity {
         context.startActivityForResult(i, requestCode);
     }
 
+    public static void startImageSelect(Activity context, int columnNum, boolean isCrop, String newFilePath, int requestCode){
+        Intent i = new Intent(context, SingleSelectImgActivity.class);
+        i.putExtra("columnNum", columnNum);
+        i.putExtra("isCrop", isCrop);
+        i.putExtra("newFilePath", newFilePath);
+        context.startActivityForResult(i, requestCode);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,8 +61,8 @@ public class SingleSelectImgActivity extends AppCompatActivity {
         supportRequestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_single_select_img);
 
-
         column_num = getIntent().getIntExtra("columnNum", 3);
+        isCrop = getIntent().getBooleanExtra("isCrop", false);
 
         title = findViewById(R.id.title);
 
@@ -66,13 +76,11 @@ public class SingleSelectImgActivity extends AppCompatActivity {
         title.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                //展示相册列表
                 View view = View.inflate(SingleSelectImgActivity.this, R.layout.popup_window_list, null);
-                folderRecyclerView = view.findViewById(R.id.folder_recycler_view);
+                RecyclerView folderRecyclerView = view.findViewById(R.id.folder_recycler_view);
                 folderRecyclerView.setLayoutManager(new LinearLayoutManager(SingleSelectImgActivity.this));
-                popupWindow = new PopupWindow(view, LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT, true);
-                popupWindow.showAsDropDown(title, 0, 0);
-
-                folderAdapter = new FolderAdapter(SingleSelectImgActivity.this, folderNameList, folderList, count);
+                FolderAdapter folderAdapter = new FolderAdapter(SingleSelectImgActivity.this, folderNameList, folderList, count);
                 folderAdapter.setOnFolderItemClickListener(new FolderAdapter.OnFolderItemClick() {
                     @Override
                     public void onItemClick(View v, int position) {
@@ -88,20 +96,42 @@ public class SingleSelectImgActivity extends AppCompatActivity {
                     }
                 });
                 folderRecyclerView.setAdapter(folderAdapter);
+                popupWindow = new PopupWindow(view, LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT, true);
+                popupWindow.showAsDropDown(title, 0, 0);
             }
         });
 
-        recyclerView = findViewById(R.id.recycler_view);
+        RecyclerView recyclerView = findViewById(R.id.recycler_view);
         recyclerView.setLayoutManager(new GridLayoutManager(SingleSelectImgActivity.this, column_num));
         imageViewAdapter = new ImageViewAdapter(this);
         imageViewAdapter.setOnImageViewItemClick(new ImageViewAdapter.OnImageViewItemClick() {
             @Override
             public void onImageItemClick(View v, int position) {
-                String s = imageViewAdapter.imgList.get(position);
-                Intent i = new Intent();
-                i.putExtra("image", s);
-                setResult(96, i);
-                finish();
+                String path = imageViewAdapter.imgList.get(position);
+                if (isCrop){
+                    //需要裁剪
+                    Intent intent = new Intent("com.android.camera.action.CROP");
+
+//                    File file = new File(path);
+//                    Files.copy(file.getPath(), )
+
+                    Uri uri = FileProvider.getUriForFile(getApplicationContext(), "com.ct7liang.imageselect.provider", new File(path));//file即为所要共享的文件的file
+                    intent.setDataAndType(uri, "image/*");
+                    intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                    intent.putExtra("crop", "true");
+                    intent.putExtra("aspectX", 1);
+                    intent.putExtra("aspectY", 1);
+                    intent.putExtra("outputX", 150);
+                    intent.putExtra("outputY", 150);
+                    intent.putExtra("return-data", true);
+                    startActivityForResult(intent, 113);
+                }else{
+                    //不需要裁剪, 直接返回图片
+                    Intent i = new Intent();
+                    i.putExtra("image", path);
+                    setResult(96, i);
+                    finish();
+                }
             }
         });
         recyclerView.setAdapter(imageViewAdapter);
@@ -117,9 +147,8 @@ public class SingleSelectImgActivity extends AppCompatActivity {
                 while (cursor.moveToNext()){
                     String data = cursor.getString(cursor.getColumnIndex(MediaStore.Images.Media.DATA));
                     list.add(data);
-//                    Log.i("pictureSelector", data);
+                    Log.i("pictureSelector", data);
                     count++;
-
                     String[] split = data.split("/");
                     String folderName = split[split.length - 2];
                     if (!folderNameList.contains(folderName)){
@@ -132,6 +161,8 @@ public class SingleSelectImgActivity extends AppCompatActivity {
                         folderList.get(i).add(data);
                     }
                 }
+
+                cursor.close();
 //                Log.i("pictureSelector", "图片读取结束, 共获取到" + count +"张图片");
 //                Log.i("pictureSelector", "获取到: " + folderList.size());
 //                Log.i("pictureSelector", "获取到: " + folderNameList.size());
@@ -149,4 +180,9 @@ public class SingleSelectImgActivity extends AppCompatActivity {
         }.start();
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+    }
 }

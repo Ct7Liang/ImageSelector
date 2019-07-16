@@ -33,7 +33,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 //8.0
 //                Intent i1 = new Intent(MainActivity.this, SingleSelectImgActivity.class);
 //                startActivityForResult(i1, REQUEST_CODE_IMAGE1);
-                SingleSelectImgActivity.startImageSelect(MainActivity.this, 4, 30);
+//                SingleSelectImgActivity.startImageSelect(MainActivity.this, 4, false, 30);
+                SingleSelectImgActivity.startImageSelect(MainActivity.this, 4, true, 30);
                 break;
         }
     }
