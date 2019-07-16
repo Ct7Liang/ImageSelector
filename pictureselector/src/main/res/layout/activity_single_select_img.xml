@@ -7,19 +7,45 @@
     android:orientation="vertical"
     tools:context=".SingleSelectImgActivity">
 
-    <TextView
-        android:id="@+id/title"
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="45dp"
-        android:text="12"
-        android:textSize="14sp"
-        android:gravity="center"/>
+        android:layout_height="48dp"
+        android:background="#FFFFFF">
 
-    <ListView
-        android:id="@+id/list_view"
-        android:scrollbars="none"
+        <ImageView
+            android:id="@+id/iv_back"
+            android:padding="15dp"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:src="@drawable/back"/>
+
+        <TextView
+            android:layout_centerInParent="true"
+            android:id="@+id/title"
+            android:layout_width="wrap_content"
+            android:layout_height="50dp"
+            android:text="12"
+            android:paddingLeft="15dp"
+            android:paddingRight="15dp"
+            android:textSize="15sp"
+            android:gravity="center"/>
+
+    </RelativeLayout>
+
+
+    <LinearLayout
+        android:id="@+id/body"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
-    </ListView>
+        android:layout_height="wrap_content">
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/recycler_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+        </android.support.v7.widget.RecyclerView>
+
+    </LinearLayout>
+
+
 
 </LinearLayout>
