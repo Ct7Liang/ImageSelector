@@ -4,8 +4,11 @@ import android.app.Activity;
 import android.content.ContentResolver;
 import android.content.Intent;
 import android.database.Cursor;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
+import android.os.Parcelable;
 import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.support.v4.content.FileProvider;
@@ -20,7 +23,10 @@ import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 import android.widget.TextView;
 
+import org.json.JSONObject;
+
 import java.io.File;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
@@ -40,6 +46,7 @@ public class SingleSelectImgActivity extends AppCompatActivity {
     //配置项
     private int column_num = 3;
     private boolean isCrop = false;
+    private File file;
 
     public static void startImageSelect(Activity context, int columnNum, int requestCode){
         Intent i = new Intent(context, SingleSelectImgActivity.class);
@@ -60,6 +67,13 @@ public class SingleSelectImgActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         supportRequestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_single_select_img);
+
+
+        file = new File(Environment.getExternalStorageDirectory(), "/Ct7liang/img_select");
+        if (!file.exists()){
+            file.mkdirs();
+        }
+
 
         column_num = getIntent().getIntExtra("columnNum", 3);
         isCrop = getIntent().getBooleanExtra("isCrop", false);
@@ -110,21 +124,28 @@ public class SingleSelectImgActivity extends AppCompatActivity {
                 String path = imageViewAdapter.imgList.get(position);
                 if (isCrop){
                     //需要裁剪
-                    Intent intent = new Intent("com.android.camera.action.CROP");
+                    try {
+                        File tempFile = new File(SingleSelectImgActivity.this.file, System.currentTimeMillis()+"_copy.jpg");
 
-//                    File file = new File(path);
-//                    Files.copy(file.getPath(), )
+                        tempFile.createNewFile();
 
-                    Uri uri = FileProvider.getUriForFile(getApplicationContext(), "com.ct7liang.imageselect.provider", new File(path));//file即为所要共享的文件的file
-                    intent.setDataAndType(uri, "image/*");
-                    intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-                    intent.putExtra("crop", "true");
-                    intent.putExtra("aspectX", 1);
-                    intent.putExtra("aspectY", 1);
-                    intent.putExtra("outputX", 150);
-                    intent.putExtra("outputY", 150);
-                    intent.putExtra("return-data", true);
-                    startActivityForResult(intent, 113);
+                        FileHelper.copy(new File(path), tempFile);
+
+                        Intent intent = new Intent("com.android.camera.action.CROP");
+                        Uri uri = FileProvider.getUriForFile(getApplicationContext(), "com.ct7liang.imageselect.provider", tempFile);//file即为所要共享的文件的file
+                        intent.setDataAndType(uri, "image/*");
+                        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                        intent.putExtra("crop", "true");
+                        intent.putExtra("aspectX", 1);
+                        intent.putExtra("aspectY", 1);
+                        intent.putExtra("outputX", 1080);
+                        intent.putExtra("outputY", 1080);
+                        intent.putExtra("return-data", true);
+                        startActivityForResult(intent, 113);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+
                 }else{
                     //不需要裁剪, 直接返回图片
                     Intent i = new Intent();
@@ -183,6 +204,26 @@ public class SingleSelectImgActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == 113 && data!=null){
+            Bundle bundle = data.getExtras();
+            Bitmap bitmap = bundle.getParcelable("data");
+            try {
+                File tempFile = new File(SingleSelectImgActivity.this.file, System.currentTimeMillis()+"_copy.jpg");
+                tempFile.createNewFile();
+                FileHelper.saveBitmap(bitmap, tempFile);
 
+                Intent i = new Intent();
+                i.putExtra("imgPath", tempFile.getAbsolutePath());
+                setResult(97, i);
+                finish();
+
+//                Intent i = new Intent();
+//                i.putExtra("Bitmap", bitmap);
+//                setResult(97, i);
+//                finish();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 }

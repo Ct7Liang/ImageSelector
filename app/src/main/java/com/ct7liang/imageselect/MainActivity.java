@@ -1,9 +1,11 @@
 package com.ct7liang.imageselect;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 
@@ -24,6 +26,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         imageView = findViewById(R.id.image);
 
         findViewById(R.id.btn_open_local_photo).setOnClickListener(this);
+        findViewById(R.id.btn_open_local_photo_crop).setOnClickListener(this);
     }
 
     @Override
@@ -34,7 +37,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 //                Intent i1 = new Intent(MainActivity.this, SingleSelectImgActivity.class);
 //                startActivityForResult(i1, REQUEST_CODE_IMAGE1);
 //                SingleSelectImgActivity.startImageSelect(MainActivity.this, 4, false, 30);
-                SingleSelectImgActivity.startImageSelect(MainActivity.this, 4, true, 30);
+                SingleSelectImgActivity.startImageSelect(MainActivity.this, 4, 30);
+                break;
+            case R.id.btn_open_local_photo_crop:
+                SingleSelectImgActivity.startImageSelect(MainActivity.this, 4, true, "", 31);
                 break;
         }
     }
@@ -44,6 +50,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == 30 && data != null){
             Glide.with(MainActivity.this).load(data.getStringExtra("image")).into(imageView);
+        }
+        if (requestCode == 31 && data != null){
+
+            String imgPath = data.getStringExtra("imgPath");
+            Log.i("imgSelector", "imgPath: " + imgPath);
+
+//            imageView.setImageBitmap((Bitmap) data.getParcelableExtra("Bitmap"));
+//            Glide.with(MainActivity.this).load(data.getStringExtra("image")).into(imageView);
         }
     }
 }
