@@ -1,5 +1,6 @@
 package com.ct7liang.imageselect;
 
+import android.Manifest;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.support.annotation.Nullable;
@@ -11,6 +12,10 @@ import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
 import com.ct7liang.pictureselector.SingleSelectImgActivity;
+import com.tbruyelle.rxpermissions2.RxPermissions;
+
+import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Consumer;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -25,8 +30,19 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         imageView = findViewById(R.id.image);
 
-        findViewById(R.id.btn_open_local_photo).setOnClickListener(this);
-        findViewById(R.id.btn_open_local_photo_crop).setOnClickListener(this);
+        RxPermissions rxPermissions = new RxPermissions(this);
+        Disposable subscribe = rxPermissions
+                .request(Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                .subscribe(new Consumer<Boolean>() {
+                    @Override
+                    public void accept(Boolean aBoolean) throws Exception {
+                        if (aBoolean) {
+                            findViewById(R.id.btn_open_local_photo).setOnClickListener(MainActivity.this);
+                            findViewById(R.id.btn_open_local_photo_crop).setOnClickListener(MainActivity.this);
+                        }
+                    }
+                });
+
     }
 
     @Override
@@ -52,9 +68,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             Glide.with(MainActivity.this).load(data.getStringExtra("image")).into(imageView);
         }
         if (requestCode == 31 && data != null){
-
             String imgPath = data.getStringExtra("imgPath");
-            Log.i("imgSelector", "imgPath: " + imgPath);
+            Glide.with(MainActivity.this).load(imgPath).into(imageView);
+//            Log.i("imgSelector", "imgPath: " + imgPath);
 
 //            imageView.setImageBitmap((Bitmap) data.getParcelableExtra("Bitmap"));
 //            Glide.with(MainActivity.this).load(data.getStringExtra("image")).into(imageView);
