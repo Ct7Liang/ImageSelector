@@ -1,4 +1,4 @@
-package com.ct7liang.pictureselector;
+package com.ct7liang.pictureselector.adapter;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
@@ -7,23 +7,27 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+
 import com.bumptech.glide.Glide;
+import com.ct7liang.pictureselector.ImageBean;
+import com.ct7liang.pictureselector.R;
+import com.ct7liang.pictureselector.WHView;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class ImageViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+public class SingleSelectAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     private LayoutInflater layoutInflater;
     private Context context;
-    public List<String> imgList = new ArrayList<>();
+    public List<ImageBean> imgList = new ArrayList<>();
 
-    public ImageViewAdapter(Context context){
+    public SingleSelectAdapter(Context context){
         this.context = context;
         layoutInflater = LayoutInflater.from(context);
     }
 
-    public void refreshData(List<String> imgList){
+    public void refreshData(List<ImageBean> imgList){
         this.imgList = imgList;
         notifyDataSetChanged();
     }
@@ -37,7 +41,7 @@ public class ImageViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder viewHolder, int i) {
         if (viewHolder instanceof ImageViewHolder){
-            Glide.with(context).load(imgList.get(i)).asBitmap().into(((ImageViewHolder) viewHolder).imageView);
+            Glide.with(context).load(imgList.get(i).load).asBitmap().into(((ImageViewHolder) viewHolder).imageView);
         }
     }
 
@@ -49,10 +53,13 @@ public class ImageViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
     private class ImageViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         WHView whView;
         ImageView imageView;
+        ImageView ivSelect;
         ImageViewHolder(@NonNull View itemView) {
             super(itemView);
             whView = itemView.findViewById(R.id.wh_view);
             imageView = itemView.findViewById(R.id.image);
+            ivSelect = itemView.findViewById(R.id.iv_select);
+            ivSelect.setVisibility(View.GONE);
             itemView.setOnClickListener(this);
         }
 
@@ -65,7 +72,7 @@ public class ImageViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
     }
 
     private OnImageViewItemClick onImageViewItemClick;
-    interface OnImageViewItemClick{
+    public interface OnImageViewItemClick{
         void onImageItemClick(View v, int position);
     }
     public void setOnImageViewItemClick(OnImageViewItemClick onImageViewItemClick){

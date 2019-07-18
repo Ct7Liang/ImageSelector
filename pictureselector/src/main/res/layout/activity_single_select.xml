@@ -30,23 +30,12 @@
             android:textSize="15sp"
             android:gravity="center"/>
 
-        <TextView
-            android:gravity="center"
-            android:textSize="14sp"
-            android:id="@+id/tv_commit"
-            android:layout_width="wrap_content"
-            android:layout_height="50dp"
-            android:paddingLeft="5dp"
-            android:paddingRight="5dp"
-            android:layout_alignParentRight="true" />
-
     </RelativeLayout>
 
     <LinearLayout
         android:id="@+id/body"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1">
+        android:layout_height="wrap_content">
 
         <android.support.v7.widget.RecyclerView
             android:id="@+id/recycler_view"
@@ -55,19 +44,5 @@
         </android.support.v7.widget.RecyclerView>
 
     </LinearLayout>
-
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="1px"
-        android:background="#e5e5e5"/>
-    <TextView
-        android:id="@+id/tv_look"
-        android:layout_width="match_parent"
-        android:layout_height="40dp"
-        android:background="#FFFFFF"
-        android:text="预览"
-        android:textSize="14sp"
-        android:gravity="center_vertical|end"
-        android:paddingRight="10dp"/>
 
 </LinearLayout>

@@ -1,4 +1,4 @@
-package com.ct7liang.pictureselector;
+package com.ct7liang.pictureselector.adapter;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
@@ -10,6 +10,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.ct7liang.pictureselector.ImageBean;
+import com.ct7liang.pictureselector.R;
 
 import java.util.List;
 
@@ -18,10 +20,10 @@ public class FolderAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
     private LayoutInflater layoutInflater;
     private Context context;
     private List<String> nameList;
-    private List<List<String>> dataList;
+    private List<List<ImageBean>> dataList;
     private int totalCount;
 
-    public FolderAdapter(Context context, List<String> nameList, List<List<String>> dataList, int totalCount){
+    public FolderAdapter(Context context, List<String> nameList, List<List<ImageBean>> dataList, int totalCount){
         this.context = context;
         this.nameList = nameList;
         this.dataList = dataList;
@@ -40,10 +42,10 @@ public class FolderAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         if (viewHolder instanceof FolderHolder){
             if (i == 0){
                 ((FolderHolder) viewHolder).tvFolder.setText("全部照片("+totalCount+")");
-                Glide.with(context).load(dataList.get(0).get(0)).asBitmap().into(((FolderHolder) viewHolder).ivFolder);
+                Glide.with(context).load(dataList.get(0).get(0).load).asBitmap().into(((FolderHolder) viewHolder).ivFolder);
             }else{
                 ((FolderHolder) viewHolder).tvFolder.setText(nameList.get(i-1) + "(" + dataList.get(i-1).size() + ")");
-                Glide.with(context).load(dataList.get(i-1).get(0)).asBitmap().into(((FolderHolder) viewHolder).ivFolder);
+                Glide.with(context).load(dataList.get(i-1).get(0).load).asBitmap().into(((FolderHolder) viewHolder).ivFolder);
             }
         }
     }
@@ -75,7 +77,7 @@ public class FolderAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
     public void setOnFolderItemClickListener(OnFolderItemClick onFolderItemClick){
         this.onFolderItemClick = onFolderItemClick;
     }
-    interface OnFolderItemClick{
+    public interface OnFolderItemClick{
         void onItemClick(View v, int position);
     }
 }

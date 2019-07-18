@@ -2,7 +2,6 @@ package com.ct7liang.imageselect;
 
 import android.Manifest;
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -10,9 +9,11 @@ import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 
-import com.bumptech.glide.Glide;
-import com.ct7liang.pictureselector.SingleSelectImgActivity;
+import com.ct7liang.pictureselector.ui.MultipleSelectActivity;
+import com.ct7liang.pictureselector.ui.SingleSelectActivity;
 import com.tbruyelle.rxpermissions2.RxPermissions;
+
+import java.util.ArrayList;
 
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
@@ -37,8 +38,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     @Override
                     public void accept(Boolean aBoolean) throws Exception {
                         if (aBoolean) {
-                            findViewById(R.id.btn_open_local_photo).setOnClickListener(MainActivity.this);
-                            findViewById(R.id.btn_open_local_photo_crop).setOnClickListener(MainActivity.this);
+                            findViewById(R.id.btn_single).setOnClickListener(MainActivity.this);
+                            findViewById(R.id.btn_single_crop).setOnClickListener(MainActivity.this);
+                            findViewById(R.id.btn_multiple).setOnClickListener(MainActivity.this);
                         }
                     }
                 });
@@ -48,15 +50,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     public void onClick(View v) {
         switch (v.getId()){
-            case R.id.btn_open_local_photo:
-                //8.0
-//                Intent i1 = new Intent(MainActivity.this, SingleSelectImgActivity.class);
-//                startActivityForResult(i1, REQUEST_CODE_IMAGE1);
-//                SingleSelectImgActivity.startImageSelect(MainActivity.this, 4, false, 30);
-                SingleSelectImgActivity.startImageSelect(MainActivity.this, 4, 30);
+            case R.id.btn_single:
+                SingleSelectActivity.startImageSelect(MainActivity.this, 4, false, 31);
                 break;
-            case R.id.btn_open_local_photo_crop:
-                SingleSelectImgActivity.startImageSelect(MainActivity.this, 4, true, "", 31);
+            case R.id.btn_single_crop:
+                SingleSelectActivity.startImageSelect(MainActivity.this, 4, true, 31);
+                break;
+            case R.id.btn_multiple:
+                MultipleSelectActivity.startImageSelect(MainActivity.this, 4, 9, 31);
                 break;
         }
     }
@@ -64,16 +65,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == 30 && data != null){
-            Glide.with(MainActivity.this).load(data.getStringExtra("image")).into(imageView);
-        }
         if (requestCode == 31 && data != null){
-            String imgPath = data.getStringExtra("imgPath");
-            Glide.with(MainActivity.this).load(imgPath).into(imageView);
-//            Log.i("imgSelector", "imgPath: " + imgPath);
-
-//            imageView.setImageBitmap((Bitmap) data.getParcelableExtra("Bitmap"));
-//            Glide.with(MainActivity.this).load(data.getStringExtra("image")).into(imageView);
+            Bundle bundle = data.getExtras();
+            if (bundle!=null){
+                ArrayList<String> images = bundle.getStringArrayList("images");
+                Log.i("imgSelector", images.toString());
+            }
         }
     }
 }

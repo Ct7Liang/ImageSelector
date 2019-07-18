@@ -3,7 +3,8 @@
     package="com.ct7liang.pictureselector">
 
     <application>
-        <activity android:name=".SingleSelectImgActivity"></activity>
+        <activity android:name=".ui.MultipleSelectActivity" />
+        <activity android:name=".ui.SingleSelectActivity"></activity>
     </application>
 
 </manifest>

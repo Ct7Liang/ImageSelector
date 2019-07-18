@@ -15,4 +15,13 @@
             android:scaleType="centerCrop"/>
     </com.ct7liang.pictureselector.WHView>
 
+    <ImageView
+        android:src="@drawable/select_false"
+        android:id="@+id/iv_select"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:layout_marginTop="3dp"
+        android:layout_marginRight="3dp"
+        android:layout_alignParentRight="true"/>
+
 </RelativeLayout>
