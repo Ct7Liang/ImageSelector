@@ -4,13 +4,11 @@ import android.app.Activity;
 import android.content.ContentResolver;
 import android.content.Intent;
 import android.database.Cursor;
-import android.graphics.Bitmap;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Parcelable;
 import android.provider.MediaStore;
 import android.support.annotation.Nullable;
-import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
@@ -23,14 +21,12 @@ import android.widget.PopupWindow;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.ct7liang.pictureselector.FileHelper;
 import com.ct7liang.pictureselector.ImageBean;
-import com.ct7liang.pictureselector.adapter.MultipleSelectAdapter;
 import com.ct7liang.pictureselector.R;
 import com.ct7liang.pictureselector.adapter.FolderAdapter;
+import com.ct7liang.pictureselector.adapter.MultipleSelectAdapter;
 
 import java.io.File;
-import java.io.IOException;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
@@ -61,7 +57,7 @@ public class MultipleSelectActivity extends AppCompatActivity {
     //手机相册集合
     private List<List<ImageBean>> folderList = new ArrayList<>();
     //当前列表中已选择的图片索引集合
-    private ArrayList<ImageBean> selectPoi = new ArrayList<>();
+    public static ArrayList<ImageBean> selectPoi = new ArrayList<>();
 
     //获取到的手机本地的图片的总数
     private int count = 0;
@@ -145,6 +141,8 @@ public class MultipleSelectActivity extends AppCompatActivity {
         supportRequestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_single_select_img);
 
+        selectPoi.clear();
+
         //生成缓存文件夹
         file = new File(Environment.getExternalStorageDirectory(), "/Ct7liang/img_select");
         if (!file.exists()){
@@ -201,7 +199,7 @@ public class MultipleSelectActivity extends AppCompatActivity {
                         }else{
                             //点击其他相册位置(索引需要减1)
                             //更新标题栏
-                            tvTitle.setText(folderNameList.get(position-1));
+                            tvTitle.setText(folderNameList.get(position-1)+"("+folderList.get(position-1).size()+")");
                             //设置数据
                             imageViewAdapter.refreshData(folderList.get(position-1), selectPoi);
                             //弹窗消失
@@ -222,8 +220,9 @@ public class MultipleSelectActivity extends AppCompatActivity {
         findViewById(R.id.tv_look).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Log.i("imgSelector", selectPoi.toString());
-                Log.i("imgSelector", selectPoi.size()+"");
+                if (selectPoi.size()!=0){
+                    ImageScanActivity.startScan(MultipleSelectActivity.this, 224);
+                }
             }
         });
 
@@ -268,7 +267,7 @@ public class MultipleSelectActivity extends AppCompatActivity {
     }
 
     /**
-     * 选择有图片,返回图片信息或者开始裁剪
+     * 选择有图片,返回图片信息
      */
     private void returnOrCrop() {
         ArrayList<String> loads = new ArrayList<>();
@@ -282,4 +281,16 @@ public class MultipleSelectActivity extends AppCompatActivity {
         finish();
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == 224 && resultCode == 115){
+            tvCommit.setText("确定("+selectPoi.size()+"/"+maxNum+")");
+            imageViewAdapter.refreshSelectPoi(selectPoi);
+            imageViewAdapter.notifyDataSetChanged();
+        }
+        if (requestCode == 224 && resultCode == 104){
+            returnOrCrop();
+        }
+    }
 }

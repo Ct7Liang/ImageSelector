@@ -1,5 +1,10 @@
 package com.ct7liang.pictureselector;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
+import java.io.Serializable;
+
 public class ImageBean {
 
     public String load;
