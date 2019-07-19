@@ -1,0 +1,5 @@
+<resources>
+    <declare-styleable name="ScrollFloatinigButton">
+        <attr name="scrollEnable" format="boolean" />
+    </declare-styleable>
+</resources>
