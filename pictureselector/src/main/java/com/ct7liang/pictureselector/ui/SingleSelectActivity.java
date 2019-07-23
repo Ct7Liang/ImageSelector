@@ -277,6 +277,11 @@ public class SingleSelectActivity extends AppCompatActivity {
                 intent.putExtra(MediaStore.EXTRA_OUTPUT, uriCrop);
                 intent.putExtra("outputFormat", Bitmap.CompressFormat.JPEG.toString());
                 intent.putExtra("noFaceDetection", true); // no face detection
+
+                //加上下面的这两句之后，系统就会把图片给我们拉伸了
+                intent.putExtra("scale", true);
+                intent.putExtra("scaleUpIfNeeded", true);
+
                 startActivityForResult(intent, 113);
             } catch (IOException e) {
                 e.printStackTrace();
@@ -291,7 +296,6 @@ public class SingleSelectActivity extends AppCompatActivity {
             finish();
         }
     }
-
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {

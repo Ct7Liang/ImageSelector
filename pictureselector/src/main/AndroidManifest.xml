@@ -5,7 +5,7 @@
     <application>
         <activity android:name=".ui.MultipleSelectActivity" />
         <activity android:name=".ui.SingleSelectActivity" />
-        <activity android:name=".ui.ImageScanActivity"></activity>
+        <activity android:name=".ui.ImageScanActivity"/>
     </application>
 
 </manifest>
