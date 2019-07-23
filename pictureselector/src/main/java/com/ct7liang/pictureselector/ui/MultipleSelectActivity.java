@@ -186,6 +186,10 @@ public class MultipleSelectActivity extends AppCompatActivity {
         tvTitle.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if (count == 0){
+                    Toast.makeText(MultipleSelectActivity.this, "暂无图片", Toast.LENGTH_SHORT).show();
+                    return;
+                }
                 //初始化popupwindow的contentView
                 View contentView = View.inflate(MultipleSelectActivity.this, R.layout.popup_window_list, null);
                 RecyclerView folderRecyclerView = contentView.findViewById(R.id.folder_recycler_view);

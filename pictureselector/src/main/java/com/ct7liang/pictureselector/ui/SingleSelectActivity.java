@@ -23,6 +23,7 @@ import android.view.WindowManager;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.ct7liang.pictureselector.FileHelper;
 import com.ct7liang.pictureselector.adapter.FolderAdapter;
@@ -172,6 +173,10 @@ public class SingleSelectActivity extends AppCompatActivity {
         tvTitle.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if (count == 0){
+                    Toast.makeText(SingleSelectActivity.this, "暂无图片", Toast.LENGTH_SHORT).show();
+                    return;
+                }
                 //初始化popupwindow的contentView
                 View contentView = View.inflate(SingleSelectActivity.this, R.layout.popup_window_list, null);
                 RecyclerView folderRecyclerView = contentView.findViewById(R.id.folder_recycler_view);
@@ -250,20 +255,31 @@ public class SingleSelectActivity extends AppCompatActivity {
                 copyTempFile.createNewFile();
                 //复制文件
                 FileHelper.copy(new File(path), copyTempFile);
-                //获取复制文件的Uri
-                Uri uri = FileProvider.getUriForFile(getApplicationContext(), "com.ct7liang.imageselect.provider", copyTempFile);
 
                 //设置裁剪之后的图片的保存路径
                 tempFileCrop = new File(SingleSelectActivity.this.file, System.currentTimeMillis()+"_copy_crop.jpg");
                 tempFileCrop.createNewFile();
-                //获取裁剪之后的图片的Uri(这里的Uri不能为)
-                //在设置裁剪要保存的 intent.putExtra(MediaStore.EXTRA_OUTPUT, outUri)的时候,这个outUri是要使用Uri.fromFile(file)生成的，而不是使用FileProvider.getUriForFile
-                Uri uriCrop = Uri.fromFile(tempFileCrop);
 
                 Intent intent = new Intent("com.android.camera.action.CROP");
-                intent.setDataAndType(uri, "image/*");
+
+                //获取复制文件的Uri
+//                Uri uri = FileProvider.getUriForFile(getApplicationContext(), "com.ct7liang.imageselect.provider", copyTempFile);
+                Uri uri;
+
+                //判断版本
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                    //如果在Android7.0以上,使用FileProvider获取Uri
+                    intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                    intent.setFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+                    uri = FileProvider.getUriForFile(getApplicationContext(), "com.ct7liang.imageselect.provider", copyTempFile);
+                } else {
+                    //否则使用Uri.fromFile(file)方法获取Uri
+                    uri = Uri.fromFile(copyTempFile);
+                }
+
                 intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
                 intent.addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+                intent.setDataAndType(uri, "image/*");
                 intent.putExtra("crop", "true");
                 intent.putExtra("scale", "true");
                 intent.putExtra("aspectX", 1);
@@ -274,7 +290,12 @@ public class SingleSelectActivity extends AppCompatActivity {
                 intent.putExtra("outputX", output);
                 intent.putExtra("outputY", output);
                 intent.putExtra("return-data", false);
+
+                //获取裁剪之后的图片的Uri(这里的Uri不能为)
+                Uri uriCrop = Uri.fromFile(tempFileCrop);
+                //在设置裁剪要保存的 intent.putExtra(MediaStore.EXTRA_OUTPUT, outUri)的时候,这个outUri是要使用Uri.fromFile(file)生成的，而不是使用FileProvider.getUriForFile
                 intent.putExtra(MediaStore.EXTRA_OUTPUT, uriCrop);
+
                 intent.putExtra("outputFormat", Bitmap.CompressFormat.JPEG.toString());
                 intent.putExtra("noFaceDetection", true); // no face detection
 
