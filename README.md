@@ -8,7 +8,7 @@ allprojects {
 }
 
 dependencies {
-    implementation 'com.github.Ct7Liang:ImageSelector:1.3'
+    implementation 'com.github.Ct7Liang:ImageSelector:1.2'
 }
 ```
 
