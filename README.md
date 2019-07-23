@@ -45,17 +45,12 @@ dependencies {
 //创建PictureSelector对象
 PictureSelector pictureSelector = new PictureSelector(MainActivity.this, "项目包名(appId)", 999);
 
-//选取本地图片
-pictureSelector.selectPhoto(false);
-//选取本地图片(裁剪)
-pictureSelector.selectPhoto(true);
-//选取本地图片(多选)
-pictureSelector.selectPhotos(9);
-//拍照选择
-pictureSelector.takePhoto(false);
-//拍照选择(裁剪)
-pictureSelector.takePhoto(true);
-
+//单选本地图片(是否需要裁剪)
+pictureSelector.selectPhoto(boolean isCrop);
+//多选本地图片(最大可选取数量)
+pictureSelector.selectPhotos(int maxNum);
+//拍照选择(是否需要裁剪)
+pictureSelector.takePhoto(boolean isCrop);
 
 @Override
 protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
