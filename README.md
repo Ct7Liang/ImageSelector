@@ -1,4 +1,4 @@
-#### 1.引入:
+#### A.引入:
 ```
 allprojects {
     repositories {
@@ -12,13 +12,13 @@ dependencies {
 }
 ```
 
-#### 2.权限配置(6.0以后注意运行时权限申请)
+#### B.权限配置(6.0以后注意运行时权限申请)
 ```
 <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
 <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
 <uses-permission android:name="android.permission.CAMERA"/>
 ```
-#### 3.FileProvider配置
+#### C.FileProvider配置
 项目-->res目录下-->新建xml文件夹--创建"file_path.xml"文件(名称随意,与清单文件中保持一致即可)
 ```
 //file_path.xml内容:
@@ -40,7 +40,7 @@ dependencies {
 </provider>
 ```
 
-#### 4.使用
+#### D.使用
 ```
 //创建PictureSelector对象
 PictureSelector pictureSelector = new PictureSelector(MainActivity.this, "项目包名(appId)", 999);
