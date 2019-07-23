@@ -107,39 +107,18 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if (requestCode == 888 && data != null){
-            Bundle bundle = data.getExtras();
-            if (bundle!=null){
-                ArrayList<String> images = bundle.getStringArrayList("images");
-                Log.i("imgSelector", images.toString());
-                if (images.size() == 1){
-                    recyclerView.setVisibility(View.GONE);
-                    imageView.setVisibility(View.VISIBLE);
-                    Glide.with(MainActivity.this).load(images.get(0)).into(imageView);
-                }else{
-                    recyclerView.setVisibility(View.VISIBLE);
-                    imageView.setVisibility(View.GONE);
-                    recyclerView.setAdapter(new ImageAdapter(MainActivity.this, images));
-                }
-            }
+        ArrayList<String> images = pictureSelector.getImages(requestCode, data);
+        Log.i("imgSelector", images.toString());
+        if (images.size() == 1){
+            recyclerView.setVisibility(View.GONE);
+            imageView.setVisibility(View.VISIBLE);
+            Glide.with(MainActivity.this).load(images.get(0)).into(imageView);
+        }else if (images.size() > 1){
+            recyclerView.setVisibility(View.VISIBLE);
+            imageView.setVisibility(View.GONE);
+            recyclerView.setAdapter(new ImageAdapter(MainActivity.this, images));
         }
 
-//        if (requestCode == 31 && data != null){
-//            Bundle bundle = data.getExtras();
-//            if (bundle!=null){
-//                ArrayList<String> images = bundle.getStringArrayList("images");
-//                Log.i("imgSelector", images.toString());
-//                if (images.size() == 1){
-//                    recyclerView.setVisibility(View.GONE);
-//                    imageView.setVisibility(View.VISIBLE);
-//                    Glide.with(MainActivity.this).load(images.get(0)).into(imageView);
-//                }else{
-//                    recyclerView.setVisibility(View.VISIBLE);
-//                    imageView.setVisibility(View.GONE);
-//                    recyclerView.setAdapter(new ImageAdapter(MainActivity.this, images));
-//                }
-//            }
-//        }
     }
 
 

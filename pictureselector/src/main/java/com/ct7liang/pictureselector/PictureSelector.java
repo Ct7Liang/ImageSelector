@@ -1,17 +1,22 @@
 package com.ct7liang.pictureselector;
 
 import android.app.Activity;
+import android.content.Intent;
+import android.os.Bundle;
 import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.View;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.ct7liang.pictureselector.ui.CameraSelectActivity;
 import com.ct7liang.pictureselector.ui.MultipleSelectActivity;
 import com.ct7liang.pictureselector.ui.SingleSelectActivity;
 
 import java.io.File;
+import java.util.ArrayList;
 
 public class PictureSelector {
 
@@ -79,5 +84,22 @@ public class PictureSelector {
                 }
             }
         }
+    }
+
+    /**
+     * 解析数据, 获取图片绝对地址的集合
+     * @param requestCode
+     * @param intent
+     * @return
+     */
+    public ArrayList<String> getImages(int requestCode, Intent intent){
+        ArrayList<String> images = new ArrayList<>();
+        if (requestCode == this.requestCode && intent != null){
+            Bundle bundle = intent.getExtras();
+            if (bundle!=null){
+                images = bundle.getStringArrayList("images");
+            }
+        }
+        return images;
     }
 }
