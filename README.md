@@ -19,7 +19,7 @@ dependencies {
 <uses-permission android:name="android.permission.CAMERA"/>
 ```
 #### C.FileProvider配置
-项目-->res目录下-->新建xml文件夹--创建"file_path.xml"文件(名称随意,与清单文件中保持一致即可)
+项目 -> res目录下 -> 新建xml文件夹 -> 创建"file_path.xml"文件(名称随意,与清单文件中保持一致即可)
 ```
 //file_path.xml内容:
 <?xml version="1.0" encoding="utf-8"?>
