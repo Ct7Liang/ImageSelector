@@ -24,6 +24,8 @@ public class CameraSelectActivity extends AppCompatActivity {
     private File file;
     //配置文件-是否需要裁剪
     private boolean isCrop;
+    //标识
+    private String appId;
     //拍照后的照片存储位置
     private File tempCameraFile;
     //拍照后的照片的Uri
@@ -31,9 +33,10 @@ public class CameraSelectActivity extends AppCompatActivity {
     //拍照并裁剪之后的照片存储位置
     private File tempCropFile;
 
-    public static void startCamera(Activity activity, boolean isCrop, int requestCode){
+    public static void startCamera(Activity activity, boolean isCrop, String appId, int requestCode){
         Intent i = new Intent(activity, CameraSelectActivity.class);
         i.putExtra("isCrop", isCrop);
+        i.putExtra("appId", appId);
         activity.startActivityForResult(i, requestCode);
     }
 
@@ -43,6 +46,7 @@ public class CameraSelectActivity extends AppCompatActivity {
         setContentView(R.layout.activity_camera_select);
 
         isCrop = getIntent().getBooleanExtra("isCrop", false);
+        appId = getIntent().getStringExtra("appId");
 
         //生成缓存文件夹
         file = new File(Environment.getExternalStorageDirectory(), "/Ct7liang/img_select");
@@ -61,7 +65,7 @@ public class CameraSelectActivity extends AppCompatActivity {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {   //如果在Android7.0以上,使用FileProvider获取Uri
                 intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
                 intent.setFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
-                tempCameraUri = FileProvider.getUriForFile(getApplicationContext(), "com.ct7liang.imageselect.provider", tempCameraFile);
+                tempCameraUri = FileProvider.getUriForFile(getApplicationContext(), appId, tempCameraFile);
             } else {    //否则使用Uri.fromFile(file)方法获取Uri
                 tempCameraUri = Uri.fromFile(tempCameraFile);
             }

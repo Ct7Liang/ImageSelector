@@ -46,6 +46,8 @@ public class SingleSelectActivity extends AppCompatActivity {
     private int column_num = 3;
     //图片选择完毕之后是否需要裁剪(默认为不需要)
     private boolean isCrop = false;
+    //标识
+    private String appId;
     //图片选择的最大可选择数(默认为1)
     private int maxNum = 1;
 
@@ -133,10 +135,11 @@ public class SingleSelectActivity extends AppCompatActivity {
         }
     }
 
-    public static void startImageSelect(Activity context, int columnNum, boolean isCrop, int requestCode){
+    public static void startImageSelect(Activity context, int columnNum, boolean isCrop, String appId, int requestCode){
         Intent i = new Intent(context, SingleSelectActivity.class);
         i.putExtra("columnNum", columnNum);
         i.putExtra("isCrop", isCrop);
+        i.putExtra("appId", appId);
         i.putExtra("maxNum", 1);
         context.startActivityForResult(i, requestCode);
     }
@@ -164,6 +167,8 @@ public class SingleSelectActivity extends AppCompatActivity {
         column_num = getIntent().getIntExtra("columnNum", 3);
         //获取是否需要裁剪图片
         isCrop = getIntent().getBooleanExtra("isCrop", false);
+        //标识
+        appId = getIntent().getStringExtra("appId");
         //获取可选择的最大图片数量
         maxNum = getIntent().getIntExtra("maxNum", 1);
 
@@ -271,7 +276,7 @@ public class SingleSelectActivity extends AppCompatActivity {
                     //如果在Android7.0以上,使用FileProvider获取Uri
                     intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
                     intent.setFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
-                    uri = FileProvider.getUriForFile(getApplicationContext(), "com.ct7liang.imageselect.provider", copyTempFile);
+                    uri = FileProvider.getUriForFile(getApplicationContext(), appId, copyTempFile);
                 } else {
                     //否则使用Uri.fromFile(file)方法获取Uri
                     uri = Uri.fromFile(copyTempFile);

@@ -48,7 +48,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                             findViewById(R.id.btn_multiple).setOnClickListener(MainActivity.this);
                             findViewById(R.id.btn_camera).setOnClickListener(MainActivity.this);
                             findViewById(R.id.btn_camera_crop).setOnClickListener(MainActivity.this);
-                            pictureSelector = new PictureSelector(MainActivity.this,888);
+                            pictureSelector = new PictureSelector(MainActivity.this, "com.ct7liang.imageselect", 888);
                         }
                     }
                 });
