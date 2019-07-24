@@ -29,15 +29,19 @@ dependencies {
 ```
 清单文件中:
 ```
-<provider
-    android:name="android.support.v4.content.FileProvider"
-    android:authorities="项目包名(appId)"
-    android:grantUriPermissions="true"
-    android:exported="false">
-    <meta-data
-        android:name="android.support.FILE_PROVIDER_PATHS"
-        android:resource="@xml/file_path" />
-</provider>
+<application
+    ...
+    <provider
+        android:name="android.support.v4.content.FileProvider"
+        android:authorities="项目包名(appId)"
+        android:grantUriPermissions="true"
+        android:exported="false">
+        <meta-data
+            android:name="android.support.FILE_PROVIDER_PATHS"
+            android:resource="@xml/file_path" />
+    </provider>
+    ...
+</application>
 ```
 
 #### D.使用
