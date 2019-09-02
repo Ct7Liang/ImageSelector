@@ -5,12 +5,11 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.annotation.NonNull;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
 import android.text.TextUtils;
-import android.util.Log;
-import android.view.View;
 import android.widget.Toast;
 
-import com.bumptech.glide.Glide;
 import com.ct7liang.pictureselector.ui.CameraSelectActivity;
 import com.ct7liang.pictureselector.ui.MultipleSelectActivity;
 import com.ct7liang.pictureselector.ui.SingleSelectActivity;
@@ -27,6 +26,7 @@ public class PictureSelector {
     private String appId;
 
     private Activity activity;
+    private Fragment fragment;
 
     //图片选择页面列数
     private int columnNum = 4;
@@ -43,6 +43,19 @@ public class PictureSelector {
         }
         this.activity = activity;
         this.appId = appId;
+        this.fragment = null;
+        this.requestCode = requestCode;
+    }
+
+    /**
+     * 构造方法
+     * @param fragment Fragment
+     * @param requestCode requestCode
+     */
+    public PictureSelector(Fragment fragment, @NonNull String appId, int requestCode) {
+        this.fragment = fragment;
+        this.appId = appId;
+        this.activity = null;
         this.requestCode = requestCode;
     }
 
@@ -53,7 +66,11 @@ public class PictureSelector {
 
     //选择图片(单选)
     public void selectPhoto(boolean isCrop){
-        SingleSelectActivity.startImageSelect(activity, columnNum, isCrop, appId, requestCode);
+        if (activity != null){
+            SingleSelectActivity.startImageSelect(activity, columnNum, isCrop, appId, requestCode);
+        }else if(fragment != null){
+            SingleSelectActivity.startImageSelect(fragment, columnNum, isCrop, appId, requestCode);
+        }
     }
 
     //选择图片(多选)
@@ -61,12 +78,21 @@ public class PictureSelector {
         if (maxNum<1){
             Toast.makeText(activity, "图片选择最大数不能小于1", Toast.LENGTH_SHORT).show();
         }
-        MultipleSelectActivity.startImageSelect(activity, columnNum, maxNum, requestCode);
+        if (activity != null){
+            MultipleSelectActivity.startImageSelect(activity, columnNum, maxNum, requestCode);
+        }else if (fragment != null){
+            MultipleSelectActivity.startImageSelect(fragment, columnNum, maxNum, requestCode);
+        }
     }
 
     //拍照
     public void takePhoto(boolean isCrop){
-        CameraSelectActivity.startCamera(activity, isCrop, appId, requestCode);
+        if (activity != null){
+            CameraSelectActivity.startCamera(activity, isCrop, appId, requestCode);
+        }else if (fragment != null){
+            CameraSelectActivity.startCamera(fragment, isCrop, appId, requestCode);
+        }
+
     }
 
     /**

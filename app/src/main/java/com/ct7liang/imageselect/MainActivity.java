@@ -48,6 +48,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                             findViewById(R.id.btn_multiple).setOnClickListener(MainActivity.this);
                             findViewById(R.id.btn_camera).setOnClickListener(MainActivity.this);
                             findViewById(R.id.btn_camera_crop).setOnClickListener(MainActivity.this);
+
+                            findViewById(R.id.fragment).setOnClickListener(MainActivity.this);
+
                             pictureSelector = new PictureSelector(MainActivity.this, "com.ct7liang.imageselect", 888);
                         }
                     }
@@ -100,6 +103,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 pictureSelector.takePhoto(true);
 //                CameraSelectActivity.startCamera(this, true, 31);
                 break;
+
+            case R.id.fragment:
+                startActivity(new Intent(this, FragmentTestActivity.class));
+                break;
         }
     }
 
@@ -120,7 +127,5 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
 
     }
-
-
 
 }

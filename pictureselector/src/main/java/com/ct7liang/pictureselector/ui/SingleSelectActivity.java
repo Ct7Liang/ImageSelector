@@ -11,6 +11,8 @@ import android.os.Build;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -142,6 +144,19 @@ public class SingleSelectActivity extends AppCompatActivity {
         i.putExtra("appId", appId);
         i.putExtra("maxNum", 1);
         context.startActivityForResult(i, requestCode);
+    }
+
+    public static void startImageSelect(Fragment fragment, int columnNum, boolean isCrop, String appId, int requestCode){
+        FragmentActivity activity = fragment.getActivity();
+        if (activity == null){
+            return;
+        }
+        Intent i = new Intent(activity, SingleSelectActivity.class);
+        i.putExtra("columnNum", columnNum);
+        i.putExtra("isCrop", isCrop);
+        i.putExtra("appId", appId);
+        i.putExtra("maxNum", 1);
+        fragment.startActivityForResult(i, requestCode);
     }
 
     @Override

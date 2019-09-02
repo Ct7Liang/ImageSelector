@@ -55,7 +55,17 @@
             android:layout_weight="1"
             android:layout_height="wrap_content"
             android:layout_marginLeft="10dp"/>
+        <Button
+            android:id="@+id/fragment"
+            android:text="Fragment调用"
+            android:textAllCaps="false"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"/>
     </LinearLayout>
+
+
 
     <RelativeLayout
         android:layout_width="match_parent"

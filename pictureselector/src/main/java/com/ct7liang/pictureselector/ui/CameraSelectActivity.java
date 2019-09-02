@@ -9,6 +9,8 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
 
@@ -38,6 +40,17 @@ public class CameraSelectActivity extends AppCompatActivity {
         i.putExtra("isCrop", isCrop);
         i.putExtra("appId", appId);
         activity.startActivityForResult(i, requestCode);
+    }
+
+    public static void startCamera(Fragment fragment, boolean isCrop, String appId, int requestCode){
+        FragmentActivity activity = fragment.getActivity();
+        if (activity == null){
+            return;
+        }
+        Intent i = new Intent(activity, CameraSelectActivity.class);
+        i.putExtra("isCrop", isCrop);
+        i.putExtra("appId", appId);
+        fragment.startActivityForResult(i, requestCode);
     }
 
     @Override
@@ -81,46 +94,56 @@ public class CameraSelectActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
         //相机拍照返回
         if (requestCode == 48){
-            //判断是否需要裁剪
-            if (isCrop){
-                //需要裁剪
-                try {
-                    //设置裁剪之后的图片的保存路径
-                    tempCropFile = new File(file, System.currentTimeMillis() + "_camera_crop.jpg");
-                    tempCropFile.createNewFile();
+            //判断是否已经拍照,避免在系统相机界面,没有拍照,直接返回的情况
+            if (tempCameraFile.length() > 0){
+                //判断是否需要裁剪
+                if (isCrop){
+                    //需要裁剪
+                    try {
+                        //设置裁剪之后的图片的保存路径
+                        tempCropFile = new File(file, System.currentTimeMillis() + "_camera_crop.jpg");
+                        tempCropFile.createNewFile();
 
-                    Intent intent = new Intent("com.android.camera.action.CROP");
-                    intent.setDataAndType(tempCameraUri, "image/*");
-                    intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-                    intent.addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
-                    intent.putExtra("crop", "true");
-                    intent.putExtra("scale", "true");
-                    intent.putExtra("aspectX", 1);
-                    intent.putExtra("aspectY", 1);
-                    intent.putExtra("outputX", 1080);
-                    intent.putExtra("outputY", 1080);
-                    intent.putExtra("return-data", false);
+                        Intent intent = new Intent("com.android.camera.action.CROP");
+                        intent.setDataAndType(tempCameraUri, "image/*");
+                        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                        intent.addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+                        intent.putExtra("crop", "true");
+                        intent.putExtra("scale", "true");
+                        intent.putExtra("aspectX", 1);
+                        intent.putExtra("aspectY", 1);
+                        intent.putExtra("outputX", 1080);
+                        intent.putExtra("outputY", 1080);
+                        intent.putExtra("return-data", false);
 
-                    //获取裁剪之后的图片的Uri
-                    Uri uriCrop = Uri.fromFile(tempCropFile);
-                    //在设置裁剪要保存的 intent.putExtra(MediaStore.EXTRA_OUTPUT, outUri)的时候,这个outUri是要使用Uri.fromFile(file)生成的，而不是使用FileProvider.getUriForFile
-                    intent.putExtra(MediaStore.EXTRA_OUTPUT, uriCrop);
+                        //获取裁剪之后的图片的Uri
+                        Uri uriCrop = Uri.fromFile(tempCropFile);
+                        //在设置裁剪要保存的 intent.putExtra(MediaStore.EXTRA_OUTPUT, outUri)的时候,这个outUri是要使用Uri.fromFile(file)生成的，而不是使用FileProvider.getUriForFile
+                        intent.putExtra(MediaStore.EXTRA_OUTPUT, uriCrop);
 
-                    intent.putExtra("outputFormat", Bitmap.CompressFormat.JPEG.toString());
-                    intent.putExtra("noFaceDetection", true); // no face detection
+                        intent.putExtra("outputFormat", Bitmap.CompressFormat.JPEG.toString());
+                        intent.putExtra("noFaceDetection", true); // no face detection
 
-                    //加上下面的这两句之后，系统就会把图片给我们拉伸了
-                    intent.putExtra("scale", true);
-                    intent.putExtra("scaleUpIfNeeded", true);
+                        //加上下面的这两句之后，系统就会把图片给我们拉伸了
+                        intent.putExtra("scale", true);
+                        intent.putExtra("scaleUpIfNeeded", true);
 
-                    startActivityForResult(intent, 110);
-                } catch (IOException e) {
-                    e.printStackTrace();
+                        startActivityForResult(intent, 110);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }else{
+                    //不需要裁剪
+                    ArrayList<String> loads = new ArrayList<>();
+                    loads.add(tempCameraFile.getAbsolutePath());
+                    Intent i = new Intent();
+                    i.putStringArrayListExtra("images", loads);
+                    setResult(86 ,i);
+                    finish();
                 }
             }else{
-                //不需要裁剪
+                //用户在相机界面没有拍照,直接返回了界面
                 ArrayList<String> loads = new ArrayList<>();
-                loads.add(tempCameraFile.getAbsolutePath());
                 Intent i = new Intent();
                 i.putStringArrayListExtra("images", loads);
                 setResult(86 ,i);

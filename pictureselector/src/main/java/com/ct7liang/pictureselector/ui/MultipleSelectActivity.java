@@ -10,6 +10,8 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
@@ -133,6 +135,17 @@ public class MultipleSelectActivity extends AppCompatActivity {
         i.putExtra("columnNum", columnNum);
         i.putExtra("maxNum", maxNum);
         context.startActivityForResult(i, requestCode);
+    }
+
+    public static void startImageSelect(Fragment fragment, int columnNum, int maxNum, int requestCode){
+        FragmentActivity activity = fragment.getActivity();
+        if (activity == null){
+            return;
+        }
+        Intent i = new Intent(activity, MultipleSelectActivity.class);
+        i.putExtra("columnNum", columnNum);
+        i.putExtra("maxNum", maxNum);
+        fragment.startActivityForResult(i, requestCode);
     }
 
 
