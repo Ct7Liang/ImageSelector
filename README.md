@@ -47,7 +47,10 @@ dependencies {
 #### D.使用
 ```
 //创建PictureSelector对象
-PictureSelector pictureSelector = new PictureSelector(MainActivity.this, "项目包名(appId)", 999);
+//Activity中使用
+PictureSelector pictureSelector = new PictureSelector(Activity activity, "项目包名(appId)", 999);
+//Fragment中使用
+PictureSelector pictureSelector = new PictureSelector(Fragment fragment, "项目包名(appId)", 999);
 
 //单选本地图片(是否需要裁剪)
 pictureSelector.selectPhoto(boolean isCrop);
